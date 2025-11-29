@@ -3562,6 +3562,8 @@ Misc:AddSwitch("Auto Hatch Crystal", function(enabled)
     end
 end)
 
+local nothinglabel = Misc:AddLabel("")
+
 Misc:AddLabel("Auto Delete Pets").TextSize = 20
 
 Misc:AddSwitch("Auto Delete Basic Pets", function(enabled)
@@ -3649,6 +3651,8 @@ Misc:AddSwitch("Auto Delete Unique Pets", function(enabled)
     end
 end)
 
+local nothinglabel = Misc:AddLabel("")
+
 Misc:AddLabel("Auto Evolve Pets").TextSize = 20
 
 local AllPetsList = {
@@ -3684,6 +3688,8 @@ Misc:AddSwitch("Auto Evolve ALL Pets", function(state)
     Evolving = state
     if state then AutoEvolveLoop() end
 end)
+
+local nothinglabel = Misc:AddLabel("")
 
 Misc:AddLabel("Rewards").TextSize = 20
 
@@ -3901,3 +3907,4 @@ tabteleport:AddButton("Safe Island", function()
     })
 
 end)
+
