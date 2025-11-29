@@ -3531,6 +3531,186 @@ Stats:AddSwitch("View Player", function(val)
     end
 end)
 
+local Misc = window:AddTab("Misc")
+
+Misc:AddLabel("Crystal Hatch").TextSize = 20
+
+local selectcrystal = nil
+
+local crystalDropdown = Misc:AddDropdown("Select Crystal", function(selectedCrystal)
+    selectcrystal = selectedCrystal
+end)
+
+crystalDropdown:Add("Blue Crystal")
+crystalDropdown:Add("Green Crystal")
+crystalDropdown:Add("Frozen Crystal")
+crystalDropdown:Add("Mythical Crystal")
+crystalDropdown:Add("Inferno Crystal")
+crystalDropdown:Add("Legends Crystal")
+crystalDropdown:Add("Dark Nebula Crystal")
+crystalDropdown:Add("Muscle Elite Crystal")
+crystalDropdown:Add("Galaxy Oracle Crystal")
+crystalDropdown:Add("Battle Legends Crystal")
+crystalDropdown:Add("Sky Eclipse Crystal")
+crystalDropdown:Add("Jungle Crystal")
+
+Misc:AddSwitch("Auto Hatch Crystal", function(enabled)
+    getgenv().crystal = enabled
+    while getgenv().crystal do
+        task.wait()
+        game:GetService("ReplicatedStorage").rEvents.openCrystalRemote:InvokeServer("openCrystal", selectcrystal)
+    end
+end)
+
+Misc:AddLabel("Auto Delete Pets").TextSize = 20
+
+Misc:AddSwitch("Auto Delete Basic Pets", function(enabled)
+    _G.autodelete_basic = enabled
+    while _G.autodelete_basic do
+        task.wait(0.1)
+        local folder = game.Players.LocalPlayer.petsFolder.Basic
+        local list = {"Red Kitty","Orange Hedgehog","Blue Birdie","Blue Bunny","Silver Dog"}
+        for _, pet in ipairs(list) do
+            local obj = folder:FindFirstChild(pet)
+            if obj then
+                game.ReplicatedStorage.rEvents.sellPetEvent:FireServer("sellPet", obj)
+            end
+        end
+    end
+end)
+
+Misc:AddSwitch("Auto Delete Advanced Pets", function(enabled)
+    _G.autodelete_adv = enabled
+    while _G.autodelete_adv do
+        task.wait(0.1)
+        local folder = game.Players.LocalPlayer.petsFolder.Advanced
+        local list = {"Yellow Butterfly","Dark Vampy","Dark Golem","Green Butterfly"}
+        for _, pet in ipairs(list) do
+            local obj = folder:FindFirstChild(pet)
+            if obj then
+                game.ReplicatedStorage.rEvents.sellPetEvent:FireServer("sellPet", obj)
+            end
+        end
+    end
+end)
+
+Misc:AddSwitch("Auto Delete Rare Pets", function(enabled)
+    _G.autodelete_rare = enabled
+    while _G.autodelete_rare do
+        task.wait(0.1)
+        local folder = game.Players.LocalPlayer.petsFolder.Rare
+        local list = {
+            "Crimson Falcon","Purple Dragon","Orange Pegasus","Red Dragon",
+            "Purple Falcon","White Pegasus","Frostwave Legends Penguin",
+            "Phantom Genesis Dragon","Eternal Strike Leviathan"
+        }
+    for _, pet in ipairs(list) do
+        local obj = folder:FindFirstChild(pet)
+        if obj then
+            game.ReplicatedStorage.rEvents.sellPetEvent:FireServer("sellPet", obj)
+        end
+    end
+    end
+end)
+
+Misc:AddSwitch("Auto Delete Epic Pets", function(enabled)
+    _G.autodelete_epic = enabled
+    while _G.autodelete_epic do
+        task.wait(0.1)
+        local folder = game.Players.LocalPlayer.petsFolder.Epic
+        local list = {
+            "Blue Pheonix","Blue Firecaster","Golden Pheonix","Red Firecaster","Green Firecaster",
+            "White Pheonix","Dark Legends Manticore","Ultimate Supernova Pegasus","Lightning Strike Phantom"
+        }
+        for _, pet in ipairs(list) do
+            local obj = folder:FindFirstChild(pet)
+            if obj then
+                game.ReplicatedStorage.rEvents.sellPetEvent:FireServer("sellPet", obj)
+            end
+        end
+    end
+end)
+
+Misc:AddSwitch("Auto Delete Unique Pets", function(enabled)
+    _G.autodelete_unique = enabled
+    while _G.autodelete_unique do
+        task.wait(0.1)
+        local folder = game.Players.LocalPlayer.petsFolder.Unique
+        local list = {
+            "Infernal Dragon","Magic Butterfly","Ultra Birdie",
+            "Aether Spirit Bunny","Cybernetic Showdown Dragon","Darkstar Dragon"
+        }
+        for _, pet in ipairs(list) do
+            local obj = folder:FindFirstChild(pet)
+            if obj then
+                game.ReplicatedStorage.rEvents.sellPetEvent:FireServer("sellPet", obj)
+            end
+        end
+    end
+end)
+
+Misc:AddLabel("Auto Evolve Pets").TextSize = 20
+
+local AllPetsList = {
+    "Neon Guardian","Blue Birdie","Blue Bunny","Blue Firecaster","Blue Pheonix",
+    "Crimson Falcon","Cybernetic Showdown Dragon","Dark Golem","Dark Legends Manticore",
+    "Dark Vampy","Darkstar Hunter","Eternal Strike Leviathan","Frostwave Legends Penguin",
+    "Gold Warrior","Golden Pheonix","Golden Viking","Green Butterfly","Green Firecaster",
+    "Infernal Dragon","Lightning Strike Phantom","Magic Butterfly","Muscle Sensei",
+    "Orange Hedgehog","Orange Pegasus","Phantom Genesis Dragon","Purple Dragon","Purple Falcon",
+    "Red Dragon","Red Firecaster","Red Kitty","Silver Dog","Ultimate Supernova Pegasus",
+    "Ultra Birdie","White Pegasus","White Pheonix","Yellow Butterfly"
+}
+
+local Evolving = false
+
+local function EvolvePet(petName)
+    game.ReplicatedStorage.rEvents.petEvolveEvent:FireServer("evolvePet", petName)
+end
+
+local function AutoEvolveLoop()
+    task.spawn(function()
+        while Evolving do
+            for _, petName in ipairs(AllPetsList) do
+                EvolvePet(petName)
+                task.wait(0.12)
+            end
+            task.wait(1)
+        end
+    end)
+end
+
+Misc:AddSwitch("Auto Evolve ALL Pets", function(state)
+    Evolving = state
+    if state then AutoEvolveLoop() end
+end)
+
+Misc:AddLabel("Rewards").TextSize = 20
+
+Misc:AddButton("Claim All Chests", function()
+    local chestEvent = game.ReplicatedStorage.rEvents.checkChestRemote
+    local chests = {
+        "Golden Chest","Enchanted Chest","Mythical Chest",
+        "Magma Chest","Legends Chest","Jungle Chest"
+    }
+    for _, c in ipairs(chests) do
+        chestEvent:InvokeServer(c)
+        task.wait(0.1)
+    end
+end)
+
+Misc:AddButton("Claim All Codes", function()
+    local codes = {
+        "Epicreward500","Frostgems10","Galaxycrystal50","Launch250","Megalift50",
+        "Millionwarriors","Musclestorm50","Spacegems50","Speedy50","Skyagility50",
+        "Supermuscle100","Superpunch100"
+    }
+    for _, code in ipairs(codes) do
+        game.ReplicatedStorage.rEvents.codeRemote:InvokeServer(code)
+        task.wait(0.1)
+    end
+end)
+
 local tabteleport = window:AddTab("Teleport")
 
 tabteleport:AddLabel("Teleport")
@@ -3719,4 +3899,5 @@ tabteleport:AddButton("Safe Island", function()
         Text = "Teleported",
         Duration = 0
     })
+
 end)
